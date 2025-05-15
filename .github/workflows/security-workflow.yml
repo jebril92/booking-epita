@@ -7,13 +7,15 @@ jobs:
   osv-scan:
     name: osv scanner run
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       - name: rep checkout
         uses: actions/checkout@v4
       - name: osv scanner run
-        uses: google/osv-scanner/actions/scanner@v1.4.0
+        uses: google/osv-scanner/actions/scanner@v2.0.2
         with:
-          args: '--format sarif .'
+          args: '--format sarif --output osv.sarif ./'
       - name: osv sarif report
         uses: github/codeql-action/upload-sarif@v3
         with:
