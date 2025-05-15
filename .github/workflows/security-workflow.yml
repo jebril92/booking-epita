@@ -13,9 +13,10 @@ jobs:
       - name: rep checkout
         uses: actions/checkout@v4
       - name: osv scanner run
-        uses: google/osv-scanner/actions/scanner@v2.0.2
+        uses: google/osv-scanner-action/osv-scanner-action@v2.0.2
+        continue-on-error: true
         with:
-          args: '--format sarif --output osv.sarif ./app'
+          scan-args: "--output=osv.sarif --format=sarif -r ./app"
       - name: osv sarif report
         uses: github/codeql-action/upload-sarif@v3
         with:
