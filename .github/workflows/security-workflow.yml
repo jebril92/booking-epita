@@ -1,0 +1,44 @@
+name: Daily Security
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  osv-scan:
+    name: osv scanner run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: rep checkout
+        uses: actions/checkout@v4
+
+      - name: osv scanner run
+        uses: google/osv-scanner-action@v1
+        with:
+          scan-args: '--format sarif .'
+
+      - name: osv sarif report
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: osv.sarif
+
+  semgrep-scan:
+    name: Scan semgrep
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+
+    steps:
+      - name: rep check
+        uses: actions/checkout@v4
+
+      - name: semgrep jqvq rules
+        run: |
+          semgrep scan --config p/java --sarif > semgrep.sarif
+
+      - name: report semgrep
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: semgrep.sarif
